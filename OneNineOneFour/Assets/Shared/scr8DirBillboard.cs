@@ -47,7 +47,7 @@ public class scr8DirBillboard : MonoBehaviour
 		sprite = GameObject.CreatePrimitive(PrimitiveType.Quad);
 		Destroy (sprite.collider);	// Remove the quad's collider.
 		sprite.renderer.material = new Material(SpriteSheet);
-		sprite.transform.localScale = new Vector3(Scale, 1, Scale * (float)FrameHeight / FrameWidth);	// Set the scale to Scale by Scale * FrameHeight / FrameWidth ratio so the texture isn't stretched.
+		sprite.transform.localScale = new Vector3(Scale, Scale * (float)FrameHeight / FrameWidth, 1);	// Set the scale to Scale by Scale * FrameHeight / FrameWidth ratio so the texture isn't stretched.
 		sprite.layer = LayerMask.NameToLayer("Ignore Raycast");
 	}
 	
