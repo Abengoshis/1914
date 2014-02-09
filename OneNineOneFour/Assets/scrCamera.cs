@@ -52,20 +52,38 @@ public class scrCamera : MonoBehaviour
 			Distance = 10;
 		else if (Distance < 2)
 			Distance = 2;
-		
-		// Change the pitch and limit to +- Pi / 2 radians.
-		pitch += Input.GetAxis("Mouse Y") * MouseSensitivity.y;
-		if (pitch > Mathf.PI / 2)
-			pitch = Mathf.PI / 2;
-		else if (pitch < -Mathf.PI / 2)
-			pitch = -Mathf.PI / 2;
-		
-		// Change the yaw and wrap around 2 Pi radians.
-		yaw -= Input.GetAxis("Mouse X") * MouseSensitivity.x;
-		if (yaw > 2 * Mathf.PI)
-			yaw = 0;
-		else if (yaw < 0)
-			yaw = 2 * Mathf.PI;
-		
+
+		if (Input.GetAxis("Move Camera") > 0)
+		{
+			// Change the pitch and limit to +- Pi / 2 radians.
+			pitch += Input.GetAxis("Mouse Y") * MouseSensitivity.y;
+			if (pitch > Mathf.PI / 2)
+				pitch = Mathf.PI / 2;
+			else if (pitch < -Mathf.PI / 2)
+				pitch = -Mathf.PI / 2;
+			
+			// Change the yaw and wrap around 2 Pi radians.
+			yaw -= Input.GetAxis("Mouse X") * MouseSensitivity.x;
+			if (yaw > 2 * Mathf.PI)
+				yaw = 0;
+			else if (yaw < 0)
+				yaw = 2 * Mathf.PI;
+		}
+		else
+		{
+			// Change the pitch and limit to +- Pi / 2 radians.
+			pitch += Input.GetAxis("Pitch Camera") * MouseSensitivity.y * 0.3f;
+			if (pitch > Mathf.PI / 2)
+				pitch = Mathf.PI / 2;
+			else if (pitch < -Mathf.PI / 2)
+				pitch = -Mathf.PI / 2;
+			
+			// Change the yaw and wrap around 2 Pi radians.
+			yaw -= Input.GetAxis("Yaw Camera") * MouseSensitivity.x * 0.3f;
+			if (yaw > 2 * Mathf.PI)
+				yaw = 0;
+			else if (yaw < 0)
+				yaw = 2 * Mathf.PI;
+		}
 	}
 }
