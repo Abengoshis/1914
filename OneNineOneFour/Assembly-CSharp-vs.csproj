@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Players\scrPlayer.cs" />
+     <Compile Include="Assets\Players\scrPlayerFour.cs" />
      <Compile Include="Assets\Shared\scr8DirBillboard.cs" />
      <Compile Include="Assets\scrCamera.cs" />
   </ItemGroup>

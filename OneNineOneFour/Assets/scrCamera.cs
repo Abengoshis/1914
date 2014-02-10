@@ -39,7 +39,7 @@ public class scrCamera : MonoBehaviour
 			Ray wallClipPreventer = new Ray(Target.transform.position, -direction);
 			RaycastHit hit;
 			float correctDistance;
-			if (Physics.Raycast(wallClipPreventer, out hit, Distance))
+			if (Physics.Raycast(wallClipPreventer, out hit, Distance, 1 << LayerMask.NameToLayer("Default")))
 				correctDistance = hit.distance - 0.2f; // Set the correct distance of the camera, preventing wall clipping by pushing it closer than its desired distance, plus 0.2 units so it is not inside the wall.
 			else
 				correctDistance = Distance;	// No clipping is observed so use the desired orbit distance.

@@ -3,6 +3,7 @@ using System.Collections;
 
 public class scrPlayer : MonoBehaviour
 {
+	private static bool interacting = false;	// Prevents constant interacting.
 	private static bool switching = false;	// Prevents constant switching between characters.
 
 	public float WalkSpeed;	// The speed to apply when walking.
@@ -11,7 +12,12 @@ public class scrPlayer : MonoBehaviour
 	
 	public bool CanControl = false;	// Whether this specific player can be controlled.
 	public bool Waiting = false;	// Whether this specific player has been signalled to wait.
-	private GameObject sibling;	// The other sibling.
+	protected GameObject sibling;	// The other sibling.
+
+	protected bool interactPressed { get; private set; }
+	protected bool jumpPressed { get; private set; }
+	protected bool switchPressed { get; private set; }
+	protected bool onGround { get; private set; }
 
 	// Use this for initialization
 	void Start ()
@@ -31,16 +37,32 @@ public class scrPlayer : MonoBehaviour
 	}
 	
 	// Update is called once per frame
-	void Update ()
+	protected virtual void Update ()
 	{
 		if (CanControl == true)
 		{
+			HandleInteract();
 			HandleSwitch();
 		}
 	}
 
-	void FixedUpdate()
+	protected virtual void FixedUpdate()
 	{
+		// Stop the rigidbody from sleeping.
+		this.rigidbody.WakeUp();
+
+		// Reset the velocity.
+		this.rigidbody.velocity = new Vector3(0, this.rigidbody.velocity.y, 0);
+
+		// Create a ray pointing down.
+		Ray floorCheck = new Ray(this.transform.position, Vector3.down);
+		
+		// Check if the player is on (slightly above for more lenient input) the floor.
+		if (Physics.Raycast(floorCheck, this.transform.localScale.y + 0.1f, 1 << LayerMask.NameToLayer("Default")))
+			onGround = true;
+		else
+			onGround = false;
+
 		if (CanControl)
 		{
 			HandleJump();
@@ -52,8 +74,28 @@ public class scrPlayer : MonoBehaviour
 		}
 	}
 
+	void HandleInteract()
+	{
+		interactPressed = false;
+		if (Input.GetAxis ("Interact") != 0)
+		{
+			// This prevents constant interacting while the Interact axis is down.
+			if (interacting == false)
+			{
+				interacting = true;
+				interactPressed = true;
+			}
+		}
+		else
+		{
+			// Interact is no longer held so allow it to be activated again on the next press.
+			interacting = false;
+		}
+	}
+
 	void HandleSwitch()
 	{
+		switchPressed = false;
 		if (Input.GetAxis ("Switch") != 0)
 		{
 			// This prevents constant switching between players while the Switch axis is down.
@@ -69,6 +111,7 @@ public class scrPlayer : MonoBehaviour
 				Camera.main.GetComponent<scrCamera>().ChangeTarget(sibling);
 
 				switching = true;
+				switchPressed = true;
 			}
 		}
 		else
@@ -80,19 +123,19 @@ public class scrPlayer : MonoBehaviour
 
 	void HandleJump ()
 	{
+		jumpPressed = false;
 		if (Input.GetAxis ("Jump") != 0)
 		{
 			if (jumping == false)
 			{
-				// Create a ray pointing down.
-				Ray floorCheck = new Ray(this.transform.position, Vector3.down);
+				// Only jump if on the ground.
+				if (onGround == true)
+				{
+					this.rigidbody.velocity += new Vector3(0, JumpSpeed, 0);
+					jumping = true;
+				}
 
-				// Check if the player is on (slightly above for more lenient input) the floor.
-				if (Physics.Raycast(floorCheck, (this.transform.localScale.y + 0.1f)))
-					this.rigidbody.velocity = new Vector3(this.rigidbody.velocity.x, JumpSpeed, this.rigidbody.velocity.z);
-
-
-				jumping = true;
+				jumpPressed = true;
 			}
 		}
 		else
@@ -132,18 +175,15 @@ public class scrPlayer : MonoBehaviour
 		this.transform.LookAt(this.transform.position + moveDirection);
 
 		// Set the horizontal components of the velocity to the move direction's horizontal components.
-		this.rigidbody.velocity = new Vector3(moveDirection.x * WalkSpeed, this.rigidbody.velocity.y, moveDirection.z * WalkSpeed);
+		this.rigidbody.velocity += new Vector3(moveDirection.x * WalkSpeed, 0, moveDirection.z * WalkSpeed);
 	}
 
 	void HandleFollow ()
 	{
+		// If this player isn't waiting, follow the other player.
 		if (Waiting == false)
 		{
-			this.rigidbody.velocity = new Vector3(0, this.rigidbody.velocity.y, 0);
-		}
-		else
-		{
-			this.rigidbody.velocity = new Vector3(0, this.rigidbody.velocity.y, 0);
+
 		}
 	}
 }
