@@ -3,19 +3,18 @@ using System.Collections;
 
 public class scrPlayerFour : scrPlayer
 {
-	private bool piggybacking = false;
-	private bool crawling = false;
+	public bool Piggybacking { get; private set; }
 
 	protected override void Update()
 	{
 		base.Update ();
 
-		if (piggybacking == true)
+		if (Piggybacking == true)
 		{
 			// Face the same direction as the other sibling.
 			this.transform.rotation = Quaternion.Lerp (this.transform.rotation, sibling.transform.rotation, 0.1f);
 
-			// If interact or jump are pressed, stop piggybacking.
+			// If interact or jump are pressed, stop Piggybacking.
 			if (interactPressed == true || jumpPressed == true)
 			{
 				// Reapply gravity.
@@ -24,7 +23,7 @@ public class scrPlayerFour : scrPlayer
 				if (jumpPressed == true)
 					this.rigidbody.velocity += new Vector3(0, JumpSpeed, 0);
 
-				piggybacking = false;
+				Piggybacking = false;
 			}
 		}
 	}
@@ -35,14 +34,7 @@ public class scrPlayerFour : scrPlayer
 		float tempWalk = WalkSpeed;
 		float tempJump = JumpSpeed;
 
-		// If crawling, reduce the walk speed and disallow jumping.
-		if (crawling == true)
-		{
-			WalkSpeed *= 0.5f;
-			JumpSpeed = 0;
-		}
-
-		if (piggybacking == true)
+		if (Piggybacking == true)
 		{
 			WalkSpeed = 0;
 
@@ -76,7 +68,7 @@ public class scrPlayerFour : scrPlayer
 				// Remove velocity and gravity.
 				this.rigidbody.useGravity = false;
 				this.rigidbody.velocity = Vector3.zero;
-				piggybacking = true;
+				Piggybacking = true;
 			}
 		}
 	}
