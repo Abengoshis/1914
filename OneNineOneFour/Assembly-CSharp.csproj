@@ -46,10 +46,12 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Interactive\scrLever.cs" />
      <Compile Include="Assets\Players\scrPlayer.cs" />
      <Compile Include="Assets\Players\scrPlayerFour.cs" />
      <Compile Include="Assets\Players\scrPlayerNine.cs" />
      <Compile Include="Assets\Shared\scr8DirBillboard.cs" />
+     <Compile Include="Assets\Shared\scrBillboard.cs" />
      <Compile Include="Assets\World\Portals\scrPortal.cs" />
      <Compile Include="Assets\scrCamera.cs" />
   </ItemGroup>

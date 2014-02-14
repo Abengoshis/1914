@@ -13,6 +13,7 @@ public class scrPlayer : MonoBehaviour
 	public bool CanControl = false;	// Whether this specific player can be controlled.
 	public bool Waiting = false;	// Whether this specific player has been signalled to wait.
 	protected GameObject sibling;	// The other sibling.
+	public GameObject InteractMarker;	// The marker that appears over interactive objects.
 
 	protected bool interactPressed { get; private set; }
 	protected bool jumpPressed { get; private set; }
@@ -33,12 +34,19 @@ public class scrPlayer : MonoBehaviour
 		else if (this.name == "One_Four")
 			sibling = GameObject.Find ("One_Nine");
 
+
+		// Create the interaction marker.
+		InteractMarker = (GameObject)Instantiate (InteractMarker);
+
 		Debug.Log (sibling.name);
 	}
 	
 	// Update is called once per frame
 	protected virtual void Update ()
 	{
+		// Hide the interaction marker.
+		InteractMarker.renderer.enabled = false;
+
 		if (CanControl == true)
 		{
 			HandleInteract();
@@ -58,7 +66,7 @@ public class scrPlayer : MonoBehaviour
 		Ray floorCheck = new Ray(this.transform.position, Vector3.down);
 		
 		// Check if the player is on (slightly above for more lenient input) the floor.
-		if (Physics.Raycast(floorCheck, this.transform.localScale.y + 0.1f, 1 << LayerMask.NameToLayer("Default")))
+		if (Physics.Raycast(floorCheck, this.transform.localScale.y + 0.1f, 1 << LayerMask.NameToLayer("Surface")))
 			onGround = true;
 		else
 			onGround = false;
@@ -76,6 +84,25 @@ public class scrPlayer : MonoBehaviour
 
 	void HandleInteract()
 	{
+		// Check for an interactive object in the direction the player is facing. Use a spherecast to give width to the cast so the player can slightly miss the object and still interact with it.
+		Ray look = new Ray(this.transform.position - this.transform.forward * 1.5f, this.transform.forward);
+		RaycastHit hit;
+		Transform interactObject = null;
+		if (Physics.SphereCast (look, 1, out hit, 3, ~(1 << LayerMask.NameToLayer("Player"))))
+		{
+			// Check if the object is interactive, specifically to this player.
+			if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Interactive") && hit.transform.tag == name)
+			{
+				interactObject = hit.transform;
+
+				// Show the interaction marker.
+				InteractMarker.renderer.enabled = true;
+
+				// Move the interaction marker so it hovers above the interactive object.
+				InteractMarker.transform.position = interactObject.transform.position + new Vector3(0, 0.5f * Mathf.Sin (Time.time * 2), 0);
+			}
+		}
+
 		interactPressed = false;
 		if (Input.GetAxis ("Interact") != 0)
 		{
@@ -84,6 +111,10 @@ public class scrPlayer : MonoBehaviour
 			{
 				interacting = true;
 				interactPressed = true;
+
+				// Interact with whatever is in front of the player.
+				if (interactObject != null)
+					interactObject.SendMessage("Interact", name);
 			}
 		}
 		else

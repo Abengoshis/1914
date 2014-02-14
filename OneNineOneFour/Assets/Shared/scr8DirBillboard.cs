@@ -38,7 +38,7 @@ public class scr8DirBillboard : MonoBehaviour
 	// Properties used to find the actual frame offset for the material.
 	private float sheetWidth { get { return SpriteSheet.mainTexture.width; } }
 	private float sheetHeight { get { return SpriteSheet.mainTexture.height; } }
-	private float xOffset { get { return FrameSet > 0 ? (float)((FramesPerSet[FrameSet - 1] + frame) * FrameWidth) / sheetWidth : 0; } }	// Divide by sheet width.
+	private float xOffset { get { return FrameSet > 0 ? (float)((FramesPerSet[FrameSet - 1] + frame) * FrameWidth / (float)(FramesPerSet[FrameSet] * FrameWidth)) : frame * FrameWidth / (float)(FramesPerSet[FrameSet] * FrameWidth); } }	// Divide by sheet width.
 	private float yOffset { get { return 1 - (float)((angle + 1) * FrameHeight) / sheetHeight; } }	// Divide by sheet height.
 	
 	// Use this for initialization

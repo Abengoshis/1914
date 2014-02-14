@@ -67,36 +67,22 @@ public class scrPlayerNine : scrPlayer
 
 		if (other.name == "Ladder")
 		{
-		// Get the angle to the player along a 2D plane.
-		float angToPlayer = Vector3.Angle(other.transform.forward,
-		                                  new Vector3(this.transform.position.x, 0, this.transform.position.z) - 
-		                                  new Vector3(other.transform.position.x, 0, other.transform.position.z));
-	
-		// Get the relative angle the player is facing.
-		float angFacing = Vector3.Angle (other.transform.forward, this.transform.forward);
+			// Get on the ladder if not already climbing, four is not on your back, the other object is a ladder, and you are facing it +- 25.5 degrees.
+			if (Climbing == false && sibling.GetComponent<scrPlayerFour>().Piggybacking == false && other.name == "Ladder")
+			{
+				// Get the angle to the player along a 2D plane.
+				float angToPlayer = Vector3.Angle(other.transform.forward,
+				                                  new Vector3(this.transform.position.x, 0, this.transform.position.z) - 
+				                                  new Vector3(other.transform.position.x, 0, other.transform.position.z));
 
-			Debug.DrawLine(other.transform.position, other.transform.position + other.transform.forward);
-			Debug.DrawLine (other.transform.position, other.transform.position + new Vector3(this.transform.position.x, 0, this.transform.position.z) - 
-			                new Vector3(other.transform.position.x, 0, other.transform.position.z));
-		
-		Debug.Log (angToPlayer + "ANGTOPLAYER");
-		Debug.Log (angFacing + "ANGFACING");
-		}
-		// Get on the ladder if not already climbing, four is not on your back, the other object is a ladder, and you are facing it +- 25.5 degrees.
-		if (Climbing == false && sibling.GetComponent<scrPlayerFour>().Piggybacking == false && other.name == "Ladder")
-		{
-			// Get the angle to the player along a 2D plane.
-			float angToPlayer = Vector3.Angle(other.transform.forward,
-			                                  new Vector3(this.transform.position.x, 0, this.transform.position.z) - 
-			                                  new Vector3(other.transform.position.x, 0, other.transform.position.z));
+				// Get the relative angle the player is facing.
+				float angFacing = Vector3.Angle (other.transform.forward, this.transform.forward);
 
-			// Get the relative angle the player is facing.
-			float angFacing = Vector3.Angle (other.transform.forward, this.transform.forward);
-
-			// If the directions are facing the opposite directions, climb the ladder.
-			if (angToPlayer > 90 && angFacing < 90 ||
-			    angToPlayer < 90 && angFacing > 90)
-				GetOnLadder(other.gameObject);
+				// If the directions are facing the opposite directions, climb the ladder.
+				if (angToPlayer > 90 && angFacing < 90 ||
+				    angToPlayer < 90 && angFacing > 90)
+					GetOnLadder(other.gameObject);
+			}
 		}
 	}
 
